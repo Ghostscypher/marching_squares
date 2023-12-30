@@ -1,62 +1,24 @@
-# Julia Set
+# Metaballs
 
 ## Introduction
 
-The Julia set and the Mandelbrot set are closely related. The Mandelbrot set is named after the mathematician Benoit Mandelbrot. The Mandelbrot set is the set of complex numbers c for which the function `f(z) = z^2 + c` does not diverge when iterated from `z = 0`, i.e., for which the sequence `f(0)`, `f(f(0))`, etc., remains bounded in absolute value. Its definition is credited to Adrien Douady who named it in tribute to the mathematician Gaston Julia. The idea of extending the Mandelbrot set to Julia sets is due to Pierre Fatou and Gaston Julia.
-
-For the Julia set we fix a complex number `c` and look at the behavior of the function `f(z) = z^2 + c`. We then look at the set of points `z` such that the sequence `f(z)`, `f(f(z))`, etc., remains bounded. This set is called the Julia set of `f` and is denoted by `J(f)`. The Julia set of `f` is connected if and only if `f` is connected.
+Metaballs are organic looking n-dimensional objects. They are defined by a threshold value and a function that returns a value for any given point in space. The function is evaluated for each pixel in the screen and the pixel is colored based on the value returned by the function. The color of the pixel is determined by the distance of the point from the threshold value. The closer the point is to the threshold value, the brighter the pixel is. The farther the point is from the threshold value, the darker the pixel is.
 
 ## Installation
 
-To run the simulation, simply clone the repository and open the `index.html` file in your browser. Alternatively, you can visit the [GitHub Pages](https://ghostscypher.github.io/julia_set/src/index.html) for this repository.
+To run the simulation, simply clone the repository and open the `index.html` file in your browser. Alternatively, you can visit the [GitHub Pages](https://ghostscypher.github.io/metaballs/src/index.html) for this repository.
 
 ## Implementation
 
-The current implementation only renders the pattern once. The color scheme used is Bernstein's color scheme. The color scheme is as follows:
-
-```javascript
-let t = map(n, 0, MAX_ITERATIONS, 0, 1);
-
-/**
- * Color scheme: Bernstein polynomials
- * https://en.wikipedia.org/wiki/Bernstein_polynomial
- * 
- * r(t) = 9 * (1 - t) * t3 * 255
- * g(t) = 15 * (1 -  t)^2 * t^2  *255
- * b(t) = 8.5 * (1 * t)^3  * t * 255
- */
-let c_r = 9 * (1 - t) * t * t * 255;
-let c_g = 15 * (1 - t) * (1 - t) * t * t * 255;
-let c_b = 8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255;
-```
-
-### Pseudocode
-
-```pseudocode
-for each pixel (Px, Py) on the screen do
-    x0 = scaled x coordinate of pixel (scaled to lie in the Mandelbrot X scale (-2.5, 1))
-    y0 = scaled y coordinate of pixel (scaled to lie in the Mandelbrot Y scale (-1, 1))
-    x = 0.0
-    y = 0.0
-    iteration = 0
-    max_iteration = 1000
-    while (x×x + y×y ≤ 2×2 AND iteration < max_iteration) do
-        xtemp = x×x - y×y + x0
-        y = 2×x×y + y0
-        x = xtemp
-        iteration = iteration + 1
-
-    color = palette[iteration]
-    plot(Px, Py, color)
-```
+The implementation is done using shaders in WebGL. The threshold value is set to 1.0 and the function is defined in the fragment shader. The function is evaluated for each pixel in the screen and the pixel is colored based on the value returned by the function. The color of the pixel is determined by the distance of the point from the threshold value. The closer the point is to the threshold value, the brighter the pixel is. The farther the point is from the threshold value, the darker the pixel is.
 
 ## Demo
 
-<img src="https://raw.githubusercontent.com/ghostscypher/julia_set/output/demo.gif" alt="Mandelbrot Set">
+![Metaballs](./screenshots/metaballs.gif)
 
 ## References
 
-1. [Julia Set - Wikipedia](https://en.wikipedia.org/wiki/Julia_set)
+1. [Metaballs](https://en.wikipedia.org/wiki/Metaballs)
 2. [P5 JS](https://p5js.org/)
 3. [P5 JS Reference](https://p5js.org/reference/)
 4. [P5 JS Examples](https://p5js.org/examples/)
@@ -64,4 +26,6 @@ for each pixel (Px, Py) on the screen do
 6. [Coding train - P5 JS Tutorials](https://www.youtube.com/user/shiffman/playlists?view=50&sort=dd&shelf_id=14)
 7. [The Nature of Code](https://natureofcode.com/)
 8. [The Coding Train](https://thecodingtrain.com/)
-9. [The Coding Train - Julia Set](https://www.youtube.com/watch?v=fAsaSkmbF5s)
+9. [The Coding Train - Metaballs](https://www.youtube.com/watch?v=ccYLb7cLB1I)
+10. [How computers draw weird-looking shapes - Reducible](https://www.youtube.com/watch?v=6oMZb3yP_H8&ab_channel=Reducible)
+11. [Rainbow Metaballs](https://openprocessing.org/sketch/838276/)

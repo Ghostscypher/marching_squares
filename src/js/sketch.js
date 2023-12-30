@@ -1,140 +1,115 @@
-const CIRCLE_DIAMETER = 150;
+const CIRCLE_DIAMETER = 50;
+const BALL_COUNT = 10;
 
 let metaballs;
-let quad_tree;
+let font = null;
+
+function preload() {
+    my_shader = loadShader(
+        './shaders/metaballs.vert',
+        './shaders/metaballs.frag'
+    );
+
+    font = loadFont('./fonts/helvetica.ttf');
+}
 
 function setup() {
-    // createCanvas(windowWidth, windowHeight);
-    createCanvas(800, 800);
+    createCanvas(windowWidth, windowHeight, WEBGL);
+    // createCanvas(800, 800, WEBGL);
     pixelDensity(1);
-    colorMode(HSB, 255);
+    colorMode(HSB, 1);
 
     // Create a metaballs object
     metaballs = new MetaBalls();
-    quad_tree = new QuadTree(new Rectangle(0, 0, width, height), 4);
 
     // Draw 4 circles with different colors
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < BALL_COUNT; i++) {
         let x = random(width);
         let y = random(height);
-        let d = random(50, CIRCLE_DIAMETER);
-        // let d = 150;
-        let ball = new Ball(x, y, d);
+        let d = random(30, CIRCLE_DIAMETER);
+        // let d = 200;
 
         // Add the ball to the metaballs object
-        metaballs.addBall(ball);
-
-        // Add the ball to the quad tree
-        quad_tree.insert(new Point(x, y, ball));
+        metaballs.addBall(new Ball(x, y, d));
     }
 
     // frameRate(10);
+    shader(my_shader);
 }
 
-function drawGrid() {
-    // Draw a grid
-    stroke(100);
-    strokeWeight(1);
-    for (let x = 0; x < width; x += 10) {
-        line(x, 0, x, height);
+function HSBToRGB(h, s, v) {
+    let r, g, b, i, f, p, q, t;
+
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
     }
-    for (let y = 0; y < height; y += 10) {
-        line(0, y, width, y);
+
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+
+    switch (i % 6) {
+        case 0:
+            r = v, g = t, b = p;
+            break;
+        case 1:
+            r = q, g = v, b = p;
+            break;
+        case 2:
+            r = p, g = v, b = t;
+            break;
+        case 3:
+            r = p, g = q, b = v;
+            break;
+        case 4:
+            r = t, g = p, b = v;
+            break;
+        case 5:
+            r = v, g = p, b = q;
+            break;
     }
+
+    return [
+        r, g, b
+    ];
 }
 
-function marchingSquares() {
-    let temp = 0;
+//
+let colors_r = [];
+let colors_g = [];
+let colors_b = [];
 
-    // h(x, y) = f(x, y) - g(x, y)
-    // f(x, y) = 1 / (x - x1)^2 + (y - y1)^2
-    // g(x, y) = 1 / (x - x2)^2 + (y - y2)^2
+function draw() {
 
-    for (let x = 0; x < width; x += 20) {
-        for (let y = 0; y < height; y += 20) {
-
-            // For each metaball calculate h(x, y)
-            let sum = 0;
-
-            for (let ball of metaballs.balls) {
-                // Get the position of the ball
-                let x1 = ball.position.x;
-                let y1 = ball.position.y;
-                let r1 = ball.r;
-
-                let h = ((x - x1) * (x - x1)) + ((y - y1) * (y - y1));
-                sum += r1 / (Math.sqrt(h));
-            }
-
-            // Get the first ball in the quad tree
-            let balls = quad_tree.query(new Circle(x, y, 200));
-            let hue_color = 0;
-            let prev_ball = null;
-
-            if (Math.abs(sum) >= 1) {
-                for (let ball of balls) {
-                    // Only draw if the points are not inside the ball
-                    ball = ball.data;
-
-                    // Smoothen the color
-                    hue_color += ball.color._getHue();
-
-                    // Prevent the color from jumping
-                    if (prev_ball != null) {
-                        if (prev_ball.color._getHue() - ball.color._getHue() > 180) {
-                            hue_color += 360;
-                        }
-                    }
-
-                    prev_ball = ball;
-                }
-
-                // Make sure the hue color is between 0 and 255
-                hue_color = hue_color % 255;
-
-                // Average the hue color
-                hue_color /= balls.length;
-
-                // console.log(hue_color, saturation_color, sum);
-
-                // hue_color = hue_color % 255;
-                // saturation_color = saturation_color % 255;
-
-                // Draw a point
-                noStroke();
-                strokeWeight(2);
-                stroke(color(hue_color, 255, 255));
-                point(x, y)
-            }
+    if (colors_r.length == 0) {
+        // Push colors of balls to array
+        for (let ball of metaballs.balls) {
+            colors_r.push(ball.color._getHue());
+            colors_g.push(1);
+            colors_b.push(1);
         }
     }
 
-    // noLoop();
-}
+    // Set up shader
+    // shader(my_shader);
+    my_shader.setUniform('u_resolution', [width, height]);
+    my_shader.setUniform('u_xs', metaballs.balls.map(b => b.position.x));
+    my_shader.setUniform('u_ys', metaballs.balls.map(b => b.position.y));
+    my_shader.setUniform('u_rs', metaballs.balls.map(b => b.r));
+    my_shader.setUniform('u_colors_r', colors_r);
+    my_shader.setUniform('u_colors_g', colors_g);
+    my_shader.setUniform('u_colors_b', colors_b);
+    my_shader.setUniform('u_time', millis() / 1000);
 
-function draw() {
-    background(0);
-
-    // Redraw the quad tree
-    quad_tree.clear();
-
-    for (let ball of metaballs.balls) {
-        quad_tree.insert(new Point(ball.position.x, ball.position.y, ball));
-    }
-
-
-    // Draw the quad tree
-    // quad_tree.show();
+    // Display the shader data
+    // rect(0, 0, width, height);
+    quad(-1, -1, 1, -1, 1, 1, -1, 1);
 
     // Draw the metaballs
-    metaballs.show(true);
+    // background(0);
 
-    // Draw a grid
-    // drawGrid();
-
-    // Marching square
-    this.marchingSquares();
-
-
-    // noLoop();
+    // Draw the grid
+    metaballs.update();
 }

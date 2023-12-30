@@ -12,7 +12,11 @@ class Ball {
         this.velocity = createVector(random(-3, 3), random(-3, 3));
 
         // Random color
-        this.color = color(random(255), 255, 255);
+        this.color = color(
+            random(1),
+            1,
+            1
+        );
 
         // Random name
         this.name = "[" + int(x) + "|" + int(y) + "|" + int(d) + "]";
@@ -57,6 +61,12 @@ class MetaBalls {
 
     addBall(ball) {
         this.balls.push(ball);
+    }
+
+    update() {
+        for (let ball of this.balls) {
+            ball.move();
+        }
     }
 
     show(show_ellipse = false) {
