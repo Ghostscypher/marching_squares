@@ -10,7 +10,7 @@ To run the simulation, simply clone the repository and open the `index.html` fil
 
 ## Implementation
 
-The implementation is done using shaders in WebGL. The threshold value is set to 1.0 and the function is defined in the fragment shader. The function is evaluated for each pixel in the screen and the pixel is colored based on the value returned by the function. The color of the pixel is determined by the distance of the point from the threshold value. The closer the point is to the threshold value, the brighter the pixel is. The farther the point is from the threshold value, the darker the pixel is.
+The implementation is done using shaders in WebGL. Each pixel is evaluated using the formula `f(x, y) = r^2 / ((x - x0)^2 + (y - y0)^2)` where `x0` and `y0` are the coordinates of the center of the metaball and `r` is the radius of the metaball. The value returned is then summed for each of the "metaballs" in the simulation. A color is then assigned based on which metaball is closest to the pixel and the threshold value is within a given range. If the pixel is not within the given range, the pixel is colored black, otherwise, the pixel is colored based on the distance of the pixel from the threshold value.
 
 ## Demo
 
