@@ -81,7 +81,7 @@ vec3 metaBalls(float x, float y) {
 
         float h = ((x - x1) * (x - x1)) + ((y - y1) * (y - y1));
         sum += r1 / sqrt(h);
-        
+
         // If current pixel position is closert to the ball choose this as the color
         if(closest == -1.0 ||  h < closest) {
             closest = h;
@@ -92,12 +92,6 @@ vec3 metaBalls(float x, float y) {
                 u_colors_b[i]
             );
         }
-
-        // If x, y is the circle edge then color it
-        // Average the colors of the balls
-        if(sum < 1.0 && sum > 1.04) {
-            color = vec3(1.0);
-        } 
     }
 
     // Rainbow colors
@@ -107,7 +101,7 @@ vec3 metaBalls(float x, float y) {
     // }
 
     // Color the edges of the balls only
-    if(sum > 1.0 && sum < 1.01) {
+    if(sum > 1.0 && sum < 1.03) {
         // Average the colors of the balls
         return hsv2rgb(color_1);
     }

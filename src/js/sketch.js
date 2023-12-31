@@ -4,6 +4,11 @@ const BALL_COUNT = 10;
 let metaballs;
 let font = null;
 
+// Ball color
+let colors_r = [];
+let colors_g = [];
+let colors_b = [];
+
 function preload() {
     my_shader = loadShader(
         './shaders/metaballs.vert',
@@ -32,6 +37,16 @@ function setup() {
         // Add the ball to the metaballs object
         metaballs.addBall(new Ball(x, y, d));
     }
+
+    if (colors_r.length == 0) {
+        // Push colors of balls to array
+        for (let ball of metaballs.balls) {
+            colors_r.push(ball.color._getHue());
+            colors_g.push(1);
+            colors_b.push(1);
+        }
+    }
+
 
     // frameRate(10);
     shader(my_shader);
@@ -76,21 +91,8 @@ function HSBToRGB(h, s, v) {
     ];
 }
 
-//
-let colors_r = [];
-let colors_g = [];
-let colors_b = [];
-
 function draw() {
 
-    if (colors_r.length == 0) {
-        // Push colors of balls to array
-        for (let ball of metaballs.balls) {
-            colors_r.push(ball.color._getHue());
-            colors_g.push(1);
-            colors_b.push(1);
-        }
-    }
 
     // Set up shader
     // shader(my_shader);
