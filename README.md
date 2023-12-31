@@ -6,7 +6,7 @@ Metaballs are organic looking n-dimensional objects. They are defined by a thres
 
 ## Installation
 
-To run the simulation, simply clone the repository and open the `index.html` file in your browser. Alternatively, you can visit the [GitHub Pages](https://ghostscypher.github.io/metaballs/src/index.html) for this repository.
+To run the simulation, simply clone the repository and open the `index.html` file in your browser. Alternatively, you can visit the [GitHub Pages](https://ghostscypher.github.io/marching_squares/src/index.html) for this repository.
 
 ## Implementation
 
